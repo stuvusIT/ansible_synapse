@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: haslersn
+  description: Matrix homeserver; see https://github.com/matrix-org/synapse
+  company: stuvus (https://stuvus.uni-stuttgart.de)
+
+  license: AGPLv3
+
+  min_ansible_version: 2.4
+
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+
+  galaxy_tags:
+    - matrix
+    - matrix-org
+    - server
+    - homeserver
+    - messenger
+    - mail
+
+dependencies: []
