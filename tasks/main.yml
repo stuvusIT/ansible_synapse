@@ -1,0 +1,70 @@
+---
+- name: Create Synapse user
+  user:
+    name: "{{ synapse_user }}"
+    state: present
+
+- name: Prepare Synapse directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ synapse_user }}"
+  loop:
+    - "{{ synapse_data_dir }}"
+
+- name: Install Synapse dependencies
+  apt:
+    name:
+      - python-virtualenv
+  notify:
+    - Restart Synapse service
+
+- name: Install Synapse's python dependencies
+  become: true
+  become_user: "{{ synapse_user }}"
+  pip:
+    state: latest
+    virtualenv: "{{ synapse_install_dir }}/env"
+    name:
+      - pip
+      - setuptools
+      - matrix-synapse
+  notify:
+    - Restart Synapse service
+
+- name: Install Synapse REST Password provider
+  get_url:
+    url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
+    dest: "{{ synapse_install_dir }}/env/lib/python3.5/site-packages/rest_auth_provider.py"
+    owner: "{{ synapse_user }}"
+  notify:
+    - Restart Synapse service
+
+- name: Instantiate Synapse homeserver config
+  template:
+    src: homeserver.yaml.j2
+    dest: "{{ synapse_data_dir }}/homeserver.yaml"
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse log config
+  template:
+    src: log.config.j2
+    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.log.config"
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse signing key
+  template:
+    src: signing.key.j2
+    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.signing.key"
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse systemd service
+  template:
+    src: synapse.service.j2
+    dest: /etc/systemd/system/synapse.service
+  notify:
+    - Reload systemd configuration
+    - Restart Synapse service
