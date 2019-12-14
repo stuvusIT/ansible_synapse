@@ -18,7 +18,8 @@ synapse_default_log_config:
       filename: "/var/log/synapse/homeserver.log"
       maxBytes: 104857600 # 100MiB
       backupCount: 10
-      filters: [context]
+      filters:
+        - context
       encoding: utf8
     console:
       class: logging.StreamHandler
