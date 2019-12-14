@@ -33,4 +33,6 @@ synapse_default_log_config:
       level: INFO
   root:
     level: INFO
-    handlers: [file, console]
+    handlers:
+      - file
+      - console
