@@ -24,7 +24,8 @@ synapse_default_log_config:
     console:
       class: logging.StreamHandler
       formatter: precise
-      filters: [context]
+      filters:
+        - context
   loggers:
     synapse:
       level: INFO
