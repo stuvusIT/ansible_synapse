@@ -16,7 +16,7 @@ synapse_default_log_config:
       class: logging.handlers.RotatingFileHandler
       formatter: precise
       filename: "/var/log/synapse/homeserver.log"
-      maxBytes: 104857600
+      maxBytes: 104857600 # 100MiB
       backupCount: 10
       filters: [context]
       encoding: utf8
