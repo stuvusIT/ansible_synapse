@@ -11,6 +11,7 @@
     owner: "{{ synapse_user }}"
   loop:
     - "{{ synapse_data_dir }}"
+    - /var/log/synapse
 
 - name: Install Synapse dependencies
   apt:
