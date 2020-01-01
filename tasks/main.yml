@@ -16,16 +16,33 @@
 - name: Install Synapse dependencies
   apt:
     name:
-      - python-virtualenv
+      - python3-venv
+  notify:
+    - Restart Synapse service
+
+- name: Read python version
+  command:
+    cmd: python3 --version
+  register: synapse_fact_python3_version_cmd
+  changed_when: False
+
+- name: Set Synapse virtualenv directory
+  set_fact:
+    synapse_fact_virtualenv_dir: "{{ synapse_install_dir }}/env-{{ synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')}}"
+  changed_when: False
+
+- name: Create Synapse virtualenv using the correct Python version
+  become_user: "{{ synapse_user }}"
+  command:
+    cmd: python3 -m venv {{ synapse_fact_virtualenv_dir | to_json }}
   notify:
     - Restart Synapse service
 
 - name: Install Synapse's python dependencies
-  become: true
   become_user: "{{ synapse_user }}"
   pip:
     state: latest
-    virtualenv: "{{ synapse_install_dir }}/env"
+    virtualenv: "{{ synapse_fact_virtualenv_dir }}"
     name:
       - pip
       - setuptools
@@ -36,7 +53,7 @@
 - name: Install Synapse REST Password provider
   get_url:
     url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
-    dest: "{{ synapse_install_dir }}/env/lib/python3.5/site-packages/rest_auth_provider.py"
+    dest: "{{ synapse_fact_virtualenv_dir }}/lib/{{ (synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')).split('.')[:-1] | join('.')}}/site-packages/rest_auth_provider.py"
     owner: "{{ synapse_user }}"
   notify:
     - Restart Synapse service

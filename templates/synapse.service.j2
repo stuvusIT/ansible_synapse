@@ -6,7 +6,7 @@ Description=Matrix Synapse homeserver
 Type=notify
 NotifyAccess=main
 User={{ synapse_user }}
-ExecStart={{ synapse_install_dir }}/env/bin/python -m synapse.app.homeserver --config-path={{ synapse_data_dir }}/homeserver.yaml
+ExecStart={{ synapse_fact_virtualenv_dir }}/bin/python -m synapse.app.homeserver --config-path={{ synapse_data_dir }}/homeserver.yaml
 ExecReload=/bin/kill -HUP $MAINPID
 WorkingDirectory={{ synapse_data_dir }}
 Restart=always
