@@ -1,2 +1,2 @@
 # {{ ansible_managed }}
-{{ synapse_log_config | default(synapse_default_log_config) | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}
+{{ synapse_log_config | to_nice_yaml(width=50, explicit_start=True, explicit_end=True) }}

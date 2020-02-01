@@ -2,7 +2,7 @@
 synapse_user: synapse
 synapse_install_dir: /opt/synapse
 synapse_data_dir: /etc/synapse
-synapse_default_log_config:
+synapse_log_config:
   version: 1
   formatters:
     precise:
