@@ -9,6 +9,7 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
   loop:
     - "{{ synapse_data_dir }}"
     - /var/log/synapse
@@ -51,6 +52,7 @@
     - Restart Synapse service
 
 - name: Install Synapse REST Password provider
+  become_user: "{{ synapse_user }}"
   get_url:
     url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
     dest: "{{ synapse_fact_virtualenv_dir }}/lib/{{ (synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')).split('.')[:-1] | join('.')}}/site-packages/rest_auth_provider.py"
@@ -59,6 +61,7 @@
     - Restart Synapse service
 
 - name: Instantiate Synapse homeserver config
+  become_user: "{{ synapse_user }}"
   template:
     src: homeserver.yaml.j2
     dest: "{{ synapse_data_dir }}/homeserver.yaml"
@@ -66,6 +69,7 @@
     - Reload Synapse service
 
 - name: Instantiate Synapse log config
+  become_user: "{{ synapse_user }}"
   template:
     src: log.config.j2
     dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.log.config"
@@ -73,9 +77,11 @@
     - Reload Synapse service
 
 - name: Instantiate Synapse signing key
+  become_user: "{{ synapse_user }}"
   template:
     src: signing.key.j2
     dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.signing.key"
+    mode: 600
   notify:
     - Reload Synapse service
 
