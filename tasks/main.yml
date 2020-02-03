@@ -1,0 +1,94 @@
+---
+- name: Create Synapse user
+  user:
+    name: "{{ synapse_user }}"
+    state: present
+
+- name: Prepare Synapse directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
+  loop:
+    - "{{ synapse_data_dir }}"
+    - /var/log/synapse
+
+- name: Install Synapse dependencies
+  apt:
+    name:
+      - python3-venv
+  notify:
+    - Restart Synapse service
+
+- name: Read python version
+  command:
+    cmd: python3 --version
+  register: synapse_fact_python3_version_cmd
+  changed_when: False
+
+- name: Set Synapse virtualenv directory
+  set_fact:
+    synapse_fact_virtualenv_dir: "{{ synapse_install_dir }}/env-{{ synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')}}"
+  changed_when: False
+
+- name: Create Synapse virtualenv using the correct Python version
+  become_user: "{{ synapse_user }}"
+  command:
+    cmd: python3 -m venv {{ synapse_fact_virtualenv_dir | to_json }}
+  notify:
+    - Restart Synapse service
+
+- name: Install Synapse's python dependencies
+  become_user: "{{ synapse_user }}"
+  pip:
+    state: latest
+    virtualenv: "{{ synapse_fact_virtualenv_dir }}"
+    name:
+      - pip
+      - setuptools
+      - matrix-synapse
+  notify:
+    - Restart Synapse service
+
+- name: Install Synapse REST Password provider
+  become_user: "{{ synapse_user }}"
+  get_url:
+    url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
+    dest: "{{ synapse_fact_virtualenv_dir }}/lib/{{ (synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')).split('.')[:-1] | join('.')}}/site-packages/rest_auth_provider.py"
+    owner: "{{ synapse_user }}"
+  notify:
+    - Restart Synapse service
+
+- name: Instantiate Synapse homeserver config
+  become_user: "{{ synapse_user }}"
+  template:
+    src: homeserver.yaml.j2
+    dest: "{{ synapse_data_dir }}/homeserver.yaml"
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse log config
+  become_user: "{{ synapse_user }}"
+  template:
+    src: log.config.j2
+    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.log.config"
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse signing key
+  become_user: "{{ synapse_user }}"
+  template:
+    src: signing.key.j2
+    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.signing.key"
+    mode: 600
+  notify:
+    - Reload Synapse service
+
+- name: Instantiate Synapse systemd service
+  template:
+    src: synapse.service.j2
+    dest: /etc/systemd/system/synapse.service
+  notify:
+    - Reload systemd configuration
+    - Restart Synapse service

@@ -1,0 +1,16 @@
+---
+- name: Reload systemd configuration
+  service:
+    daemon_reload: True
+
+- name: Restart Synapse service
+  service:
+    name: synapse
+    enabled: true
+    state: restarted
+
+- name: Reload Synapse service
+  service:
+    name: synapse
+    enabled: true
+    state: reloaded

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Matrix Synapse homeserver
+
+[Service]
+Type=notify
+NotifyAccess=main
+User={{ synapse_user }}
+ExecStart={{ synapse_fact_virtualenv_dir }}/bin/python -m synapse.app.homeserver --config-path={{ synapse_data_dir }}/homeserver.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+WorkingDirectory={{ synapse_data_dir }}
+Restart=always
+RestartSec=10
+SyslogIdentifier=matrix-synapse
+
+[Install]
+WantedBy=multi-user.target
