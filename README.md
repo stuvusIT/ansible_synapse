@@ -41,11 +41,11 @@ For further configuration options, see [role variables](#role-variables).
 
 ## Role variables
 
-| Name                        | Default                 | Description                                    |
-| :-------------------------- | :---------------------- | :--------------------------------------------- |
-| `synapse_data_dir`          | `/etc/synapse`          | Directory to store config and database         |
-| `synapse_homeserver_config` |                         | [#configuration](#configuration) |
-| `synapse_install_dir`       | `/opt/synapse`          | Directory to store the synapse installation    |
-| `synapse_log_config`        | See `defaults/main.yml` | Content of `<server_name>.log.config` |
-| `synapse_signing_key`       |                         | [#configuration](#configuration) |
-| `synapse_user`              | `synapse`               | The user running the synapse service           |
+| Name                        | Default                 | Description                                 |
+| :-------------------------- | :---------------------- | :------------------------------------------ |
+| `synapse_data_dir`          | `/etc/synapse`          | Directory to store config and database      |
+| `synapse_homeserver_config` |                         | [#configuration](#configuration)            |
+| `synapse_install_dir`       | `/opt/synapse`          | Directory to store the synapse installation |
+| `synapse_log_config`        | See `defaults/main.yml` | Content of `<server_name>.log.config`       |
+| `synapse_signing_key`       |                         | [#configuration](#configuration)            |
+| `synapse_user`              | `synapse`               | The user running the synapse service        |
