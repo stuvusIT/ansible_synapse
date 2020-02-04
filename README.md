@@ -39,11 +39,26 @@ At the very least the following two role variables are required.
 
 For further configuration options, see [role variables](#role-variables).
 
+## Directories
+
+This role creates the following directories (owned by user and group `{{ synapse_user }}`).
+
+* `{{ synapse_config_dir }}`.
+  The config files are placed therein.
+* `{{ synapse_data_dir}}`.
+  The role creates but does not use this directory.
+  It is intended to be used in your `synapse_homeserver_config` in order to store variable data.
+  I.e. `pid_file`, `database`, `media_store_path`, `uploads_path` and such.
+* `{{ synapse_log_dir }}`
+  The role creates this directory and the default log config uses it to store logs.
+
 ## Role variables
 
 | Name                        | Default                 | Description                                 |
 | :-------------------------- | :---------------------- | :------------------------------------------ |
-| `synapse_data_dir`          | `/etc/synapse`          | Directory to store config and database      |
+| `synapse_config_dir`        | `/etc/synapse`          | [directories](#directories)                 |
+| `synapse_data_dir`          | `/var/opt/synapse`      | [directories](#directories)                 |
+| `synapse_log_dir`           | `/var/log/synapse`      | [directories](#directories)                 |
 | `synapse_homeserver_config` |                         | [#configuration](#configuration)            |
 | `synapse_install_dir`       | `/opt/synapse`          | Directory to store the synapse installation |
 | `synapse_log_config`        | See `defaults/main.yml` | Content of `<server_name>.log.config`       |

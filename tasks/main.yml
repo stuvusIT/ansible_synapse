@@ -11,8 +11,9 @@
     owner: "{{ synapse_user }}"
     group: "{{ synapse_user }}"
   loop:
+    - "{{ synapse_config_dir }}"
     - "{{ synapse_data_dir }}"
-    - /var/log/synapse
+    - "{{ synapse_log_dir }}"
 
 - name: Install Synapse dependencies
   apt:
@@ -52,36 +53,39 @@
     - Restart Synapse service
 
 - name: Install Synapse REST Password provider
-  become_user: "{{ synapse_user }}"
   get_url:
     url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
     dest: "{{ synapse_fact_virtualenv_dir }}/lib/{{ (synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')).split('.')[:-1] | join('.')}}/site-packages/rest_auth_provider.py"
     owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
   notify:
     - Restart Synapse service
 
 - name: Instantiate Synapse homeserver config
-  become_user: "{{ synapse_user }}"
   template:
     src: homeserver.yaml.j2
-    dest: "{{ synapse_data_dir }}/homeserver.yaml"
+    dest: "{{ synapse_config_dir }}/homeserver.yaml"
+    owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
   notify:
     - Reload Synapse service
 
 - name: Instantiate Synapse log config
-  become_user: "{{ synapse_user }}"
   template:
     src: log.config.j2
-    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.log.config"
+    dest: "{{ synapse_config_dir }}/{{ synapse_homeserver_config.server_name }}.log.config"
+    owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
   notify:
     - Reload Synapse service
 
 - name: Instantiate Synapse signing key
-  become_user: "{{ synapse_user }}"
   template:
     src: signing.key.j2
-    dest: "{{ synapse_data_dir }}/{{ synapse_homeserver_config.server_name }}.signing.key"
-    mode: 600
+    dest: "{{ synapse_config_dir }}/{{ synapse_homeserver_config.server_name }}.signing.key"
+    owner: "{{ synapse_user }}"
+    group: "{{ synapse_user }}"
+    mode: 0600
   notify:
     - Reload Synapse service
 

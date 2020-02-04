@@ -1,7 +1,9 @@
 ---
 synapse_user: synapse
 synapse_install_dir: /opt/synapse
-synapse_data_dir: /etc/synapse
+synapse_config_dir: /etc/synapse
+synapse_data_dir: /var/opt/synapse
+synapse_log_dir: /var/log/synapse
 synapse_log_config:
   version: 1
   formatters:
@@ -15,7 +17,7 @@ synapse_log_config:
     file:
       class: logging.handlers.RotatingFileHandler
       formatter: precise
-      filename: "/var/log/synapse/homeserver.log"
+      filename: "{{ synapse_log_dir }}/homeserver.log"
       maxBytes: 104857600 # 100MiB
       backupCount: 10
       filters:
