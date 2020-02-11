@@ -54,7 +54,7 @@
 
 - name: Install Synapse REST Password provider
   get_url:
-    url: https://raw.githubusercontent.com/kamax-matrix/matrix-synapse-rest-auth/master/rest_auth_provider.py
+    url: https://raw.githubusercontent.com/ma1uta/matrix-synapse-rest-password-provider/master/rest_auth_provider.py
     dest: "{{ synapse_fact_virtualenv_dir }}/lib/{{ (synapse_fact_python3_version_cmd.stdout | replace('Python ', 'python')).split('.')[:-1] | join('.')}}/site-packages/rest_auth_provider.py"
     owner: "{{ synapse_user }}"
     group: "{{ synapse_user }}"
