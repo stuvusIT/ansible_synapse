@@ -37,6 +37,7 @@
   become_user: "{{ synapse_user }}"
   command:
     cmd: python3 -m venv {{ synapse_fact_virtualenv_dir | to_json }}
+    creates: "{{ synapse_fact_virtualenv_dir }}"
   notify:
     - Restart Synapse service
 
