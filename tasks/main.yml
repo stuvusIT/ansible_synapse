@@ -69,7 +69,7 @@
     owner: "{{ synapse_user }}"
     group: "{{ synapse_user }}"
   notify:
-    - Reload Synapse service
+    - Restart Synapse service # "reload" only reloads log config.
 
 - name: Instantiate Synapse log config
   template:
@@ -88,7 +88,7 @@
     group: "{{ synapse_user }}"
     mode: 0600
   notify:
-    - Reload Synapse service
+    - Restart Synapse service
 
 - name: Instantiate Synapse systemd service
   template:
