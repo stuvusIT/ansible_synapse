@@ -14,15 +14,6 @@ synapse_log_config:
       (): synapse.util.logcontext.LoggingContextFilter
       request: ""
   handlers:
-    file:
-      class: logging.handlers.RotatingFileHandler
-      formatter: precise
-      filename: "{{ synapse_log_dir }}/homeserver.log"
-      maxBytes: 104857600 # 100MiB
-      backupCount: 10
-      filters:
-        - context
-      encoding: utf8
     console:
       class: logging.StreamHandler
       formatter: precise
@@ -38,5 +29,4 @@ synapse_log_config:
   root:
     level: INFO
     handlers:
-      - file
       - console
